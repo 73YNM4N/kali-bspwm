@@ -5,6 +5,7 @@ GREEN=$'\e[1;32m'
 YELLOW=$'\e[1;33m'
 BLUE=$'\e[1;34m'
 LIGHT_CYAN=$'\e[1;96m'
+PURPLE=$'\e[1;35m'
 RESET=$'\e[0m'
 
 73YNM4N() {
@@ -15,8 +16,8 @@ ${BLUE}
 ░░░░██╔╝░█████╔╝░╚████╔╝░██╔██╗██║██╔████╔██║██╔╝░██║██╔██╗██║█████╗██████╦╝╚█████╗░██████╔╝░╚██╗████╗██╔╝██╔████╔██║
 ░░░██╔╝░░╚═══██╗░░╚██╔╝░░██║╚████║██║╚██╔╝██║███████║██║╚████║╚════╝██╔══██╗░╚═══██╗██╔═══╝░░░████╔═████║░██║╚██╔╝██║
 ░░██╔╝░░██████╔╝░░░██║░░░██║░╚███║██║░╚═╝░██║╚════██║██║░╚███║░░░░░░██████╦╝██████╔╝██║░░░░░░░╚██╔╝░╚██╔╝░██║░╚═╝░██║
-░░╚═╝░░░╚═════╝░░░░╚═╝░░░╚═╝░░╚══╝╚═╝░░░░░╚═╝░░░░░╚═╝╚═╝░░╚══╝░░░░░░╚═════╝░╚═════╝░╚═╝░░░░░░░░╚═╝░░░╚═╝░░╚═╝░░░░░╚═╝  
- ${RESET} 
+░░╚═╝░░░╚═════╝░░░░╚═╝░░░╚═╝░░╚══╝╚═╝░░░░░╚═╝░░░░░░═╝╚═╝░░╚══╝░░░░░░╚═════╝░╚═════╝░╚═╝░░░░░░░░╚═╝░░░╚═╝░░╚═╝░░░░░╚═╝
+  ${RESET}
 "
 }
 
@@ -33,23 +34,29 @@ ${RESET}
   "
 }
 
+sep() {
+  echo -ne "
+╔══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╦══╗
+╚══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╩══╝
+  "
+}
 root_check() {
-  if [ "$(id -u)" = 0 ]; then
-    echo "${GREEN}[+] --${RESET}${RED} "this scritp not be run as root user"${RESET}"
+  if [ "$(id -u)" -eq 0 ]; then
+    echo "${GREEN}[+] --${RESET}${RED} Este script no debe ser ejecutado como usuario root${RESET}"
     exit 1
   fi
 
   if [ "$PWD" != "$HOME" ]; then
-    echo "${YELLOW} "script must be executed from HOME directory"${RESET}"
+    echo "${YELLOW} El script debe ser ejecutado desde el directorio HOME${RESET}"
     exit 1
   fi
 }
 
 install_dependencies() {
-  icon
-  echo "${GREEN}[+] --${RESET} Instalando paquetes..."
-  sudo apt update
-  local dependencies=(
+
+  local separator=$(sep)
+
+  local_dependencies=(
     build-essential git vim libxcb-util0-dev libxcb-ewmh-dev libxcb-randr0-dev libxcb-icccm4-dev
     libxcb-keysyms1-dev libxcb-xinerama0-dev libasound2-dev libxcb-xtest0-dev libxcb-shape0-dev libuv1-dev
     cmake cmake-data pkg-config python3-sphinx libcairo2-dev libxcb1-dev python3-xcbgen xcb-proto libxcb-image0-dev
@@ -61,52 +68,43 @@ install_dependencies() {
     libpcre2-dev libpcre3-dev libevdev-dev uthash-dev libev-dev libx11-xcb-dev libxcb-glx0-dev
     alacritty neovim libnotify-bin thunar fastfetch npm x11-utils coreutils bspwm polybar sxhkd picom tmux zsh
   )
-  echo "${GREEN}[+] -- ${RESET} Instalando paquetes:"
-  for package in "${dependencies[@]}"; do
-    echo "${GREEN}[+] -- ${RESET} ${YELLOW} package to install: ${RESET} $package"
-  done
 
-  sudo apt install -y "${dependencies[@]}" | while read line; do
-    if [[ "$line" == "Installing"* ]]; then
-      echo "${GREEN}[+] -- ${RESET} $line"
+  for package in "${local_dependencies[@]}"; do
+    sudo apt-get update && sudo apt-get install -y "$package"
+    echo "${PURPLE} $separator ${RESET}${YELLOW}Instalando el paquete --> ${RESET}${BLUE}$package${RESET}${PURPLE} $separator ${RESET}"
+    if [ $? -eq 0 ]; then
+      echo "${GREEN} $separator ${RESET}${YELLOW}Se instalo correctamente el paquete --> ${RESET}${BLUE}$package${RESET}${GREEN} $separator ${RESET}"
+    else
+      echo "${RED} $separator ${RESET}${YELLOW}Instalando el paquete --> ${RESET}${BLUE}$package${RESET}${RED} $separator ${RESET}"
     fi
   done
 
-  if [ $? -eq 0 ]; then
-    echo "${GREEN}[+] --${RESET} ${YELLOW} Install complete ${RESET}"
-  else
-    echo "${RED}[-] -- Error: install error.${RESET}"
-    return 1
-  fi
+  echo "${YELLOW} $separator ${RESET}${RED}Proceso completado con exito ${RESET}${YELLOW} $separator ${RESET}"
 }
 
 download_repository() {
   icon
-  echo "${GREEN}[+] --${RESET} ${RED} Download repository bspwm-kali  ${RESET}"
+  echo "${GREEN} $separator ${RESET} ${PURPLE} Descargando repositorio bspwm-kali  ${RESET}${GREEN} $separator ${RESET}"
   git clone https://github.com/73YNM4N/kali-bspwm.git
 
 }
 
 download_p10k() {
-  clear
   icon
-  echo "${GREEN}[+] --${RESET} ${RED} Download powerlevel10k ${RESET}"
+  echo "${GREEN} $separator ${RESET} ${PURPLE} Descargando powerlevel10k  ${RESET}${GREEN} $separator ${RESET}"
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
-  echo 'source ~/powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc
 
 }
 
 download_astrovim() {
-  clear
   icon
-  echo "${GREEN}[+] --${RESET} ${RED} Download astrovim ${RESET}"
+  echo "${GREEN} $separator ${RESET} ${PURPLE} Descargando astrovim  ${RESET}${GREEN} $separator ${RESET}"
   git clone --depth 1 https://github.com/AstroNvim/template ~/.config/nvim
   rm -rf ~/.config/nvim/.git
 
 }
 
 permissions() {
-  clear
   icon
   archivos=(
     "${HOME}/kali-bspwm/config/bspwm/bspwmrc"
@@ -131,43 +129,51 @@ permissions() {
 
   for archivo in "${archivos[@]}"; do
     chmod +x "$archivo"
-    echo "${GREEN}[+] --${RESET} ${RED}Privileges assigned to: ${RESET} $archivo"
+    echo "${GREEN}[+] --${RESET} ${RED}Privilegios asignados a: ${RESET} $archivo"
   done
 
 }
 
 config_Set() {
-  clear
   icon
-  if [ "$PWD" != "${HOME}/bspmw-kali" ]; then
-    echo "${GREEN}[+] --${RESET} ${RED} moving config a your .config ${RESET}"
+  if [ "$PWD" != "${HOME}/kali-bspwm" ]; then
+    echo "${GREEN} $separator ${RESET} ${PURPLE} Moviendo la carpeta config a tu .config  ${RESET}${GREEN} $separator ${RESET}"
     cd "${HOME}"/kali-bspwm/
     cp config/* "${HOME}"/.config/ -rf
+  else
+    echo "${GREEN} $separator ${RESET} ${PURPLE} Moviendo la carpeta config a tu .config  ${RESET}${GREEN} $separator ${RESET}"
+    cp config/* "${HOME}"/.config/ -rf
+    return
   fi
 
 }
 
 config_fonts() {
-  clear
   icon
-  if [ "$PWD" != "${HOME}/bspmw-kali" ]; then
+  if [ "$PWD" != "${HOME}/kali-bspwm" ]; then
     cd "${HOME}"/kali-bspwm
-    echo "${GREEN}[+] --${RESET} ${RED} moving fonts a /usr/share/fonts ${RESET}"
+    echo "${GREEN} $separator ${RESET} ${PURPLE} Moviendo las fuentes e iconos a /usr/share/fonts  ${RESET}${GREEN} $separator ${RESET}"
     sudo cp fonts/* /usr/share/fonts -rf
-    exit
+  else
+    echo "${GREEN} $separator ${RESET} ${PURPLE} Moviendo las fuentes e iconos a /usr/share/fonts  ${RESET}${GREEN} $separator ${RESET}"
+    sudo cp fonts/* /usr/share/fonts -rf
+    return
   fi
 
 }
 
 config_home() {
-  clear
   icon
-  if [ "$PWD" != "${HOME}/bspmw-kali" ]; then
+  if [ "$PWD" != "${HOME}/kali-bspwm" ]; then
     cd "${HOME}"/kali-bspwm
-    echo "${GREEN}[+] --${RESET} ${RED} moving .zshrc and .p10k a your ${HOME} ${RESET}"
+    echo "${GREEN}[+] --${RESET} ${RED} Moviendo .zshrc y .p10k a tu ${HOME} ${RESET}"
     cp home/.zshrc "${HOME}/" -rf
     cp home/.p10k.zsh "${HOME}/" -rf
-    exit
+  else
+    echo "${GREEN}[+] --${RESET} ${RED} Moviendo .zshrc y .p10k a tu ${HOME} ${RESET}"
+    cp home/.zshrc "${HOME}/" -rf
+    cp home/.p10k.zsh "${HOME}/" -rf
+    return
   fi
 
 }
