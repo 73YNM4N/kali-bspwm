@@ -1,0 +1,91 @@
+
+configuration {
+    modi:                        "drun";
+    show-icons:                  true;
+    drun-display-format:         "{name}";
+    hover-select:				 true;
+	//me-select-entry:			 "";
+	// me-accept-entry:			 "MousePrimary";
+}
+
+
+window {
+    enabled:                     true;
+    fullscreen:                  false;
+    location:                   center;
+    anchor:                     center;
+    width:                       99%;
+    transparency:                "real";
+    cursor:                      "default";
+    spacing:                     0px;
+    padding:                     0px;
+    border:                      0px;
+    border-radius:               0px;
+    border-color:                transparent;
+    background-color:            transparent;
+}
+
+mainbox {
+    enabled:                     true;
+    padding:                     0px;
+    children:                    [ "listview" ];
+    background-color:            transparent;
+}
+
+listview {
+    enabled:                     true;
+    columns:                     5;
+    lines:                       2;
+    spacing:                     10px;
+    padding:                     10px 15px;
+    cycle:                       false;
+    dynamic:                     false;
+    scrollbar:                   true;
+    layout:                      vertical;
+    reverse:                     false;
+    fixed-height:                true;
+    fixed-columns:               true;
+    cursor:                      "default";
+    background-color:            transparent;
+    text-color:                  #ffffff;
+}
+
+element {
+    enabled:                     true;
+    orientation:                 vertical;
+    spacing:                     0px;
+    padding:                     5px 5px 5px 5px;
+    border-radius:               20px;
+    cursor:                      pointer;
+    background-color:            transparent;
+    text-color:                  #ffffff;
+}
+
+// @media(max-aspect-ratio: 1.8 ) {
+    // element {
+        // orientation:             vertical;
+    // }
+// }
+
+element selected.normal {
+    background-color:            #0fffff;
+    text-color:                  #0fffff;
+}
+
+element-icon {
+	border-radius:				 20px;
+    cursor:                      inherit;
+    background-color:            transparent;
+    text-color:                  inherit;
+    padding:                     10px 0px 0px 0px;
+}
+
+element-text {
+    vertical-align:              0.5;
+    horizontal-align:            0.5;
+    padding:                     0px 0px 0px 0px;
+    cursor:                      inherit;
+    background-color:            transparent;
+    text-color:                  transparent;
+} 
+

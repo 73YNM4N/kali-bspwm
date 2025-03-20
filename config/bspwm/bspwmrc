@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# ░░░░░░░░░░░░██████╗░░██████╗██████╗░░██╗░░░░░░░██╗███╗░░░███╗░░░░░░░█████╗░░█████╗░███╗░░██╗███████╗░██████╗░░░░░░░░░░░░░
+# ░░░░░░░░░░░░██╔══██╗██╔════╝██╔══██╗░██║░░██╗░░██║████╗░████║░░░░░░██╔══██╗██╔══██╗████╗░██║██╔════╝██╔════╝░░░░░░░░░░░░░
+# █████╗█████╗██████╦╝╚█████╗░██████╔╝░╚██╗████╗██╔╝██╔████╔██║█████╗██║░░╚═╝██║░░██║██╔██╗██║█████╗░░██║░░██╗░█████╗█████╗
+# ╚════╝╚════╝██╔══██╗░╚═══██╗██╔═══╝░░░████╔═████║░██║╚██╔╝██║╚════╝██║░░██╗██║░░██║██║╚████║██╔══╝░░██║░░╚██╗╚════╝╚════╝
+# ░░░░░░░░░░░░██████╦╝██████╔╝██║░░░░░░░╚██╔╝░╚██╔╝░██║░╚═╝░██║░░░░░░╚█████╔╝╚█████╔╝██║░╚███║██║░░░░░╚██████╔╝░░░░░░░░░░░░
+# ░░░░░░░░░░░░╚═════╝░╚═════╝░╚═╝░░░░░░░░╚═╝░░░╚═╝░░╚═╝░░░░░╚═╝░░░░░░░╚════╝░░╚════╝░╚═╝░░╚══╝╚═╝░░░░░░╚═════╝░░░░░░░░░░░░░
+export XDG_CURRENT_DESKTOP='bspwm'
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+pgrep -x sxhkd >/dev/null || sxhkd &
+
+for monitor in $(xrandr -q | grep -w 'connected' | cut -d' ' -f1); do
+  bspc monitor "$monitor" -d I II III IV V VI VII VIII IX X
+done
+
+bspc config window_gap 5
+bspc config split_ratio 0.50
+bspc config borderless_monocle true
+bspc config borderless_monocle false
+bspc config gapless_monocle false
+bspc config focus_follows_pointer true
+bspc config pointer_follows_focus false
+bspc config pointer_motion_interval 5
+bspc config pointer_modifier mod4
+bspc config pointer_action1 move
+bspc config pointer_action2 resize_side
+bspc config pointer_action3 resize_corner
+
+~/.config/polybar/./launch.sh --arc &
+pidof -q sxhkd || { sxhkd -c /home/.config/sxhkd/sxhkd & }
+pidof -q picom || { picom --config ~/.config/picom/picom.conf & }
